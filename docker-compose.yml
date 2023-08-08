@@ -1,0 +1,29 @@
+services:
+  mysql:
+    image: mysql:8.1.0
+    command: --default-authentication-plugin=caching_sha2_password
+    restart: always
+    environment:
+      MYSQL_RANDOM_ROOT_PASSWORD: 'yes'
+    volumes:
+      - type: bind
+        source: ./sql/dev
+        target: /docker-entrypoint-initdb.d/
+      - type: bind
+        source: ./sql/mysql.cnf
+        target: /etc/mysql/conf.d/mysql.cnf
+    ports:
+      - 3306:3306
+      - 33060:33060
+  apache:
+    image: httpd:2.4.57
+    volumes:
+      - type: bind
+        source: ./php/dev
+        target: /usr/local/apache2/htdocs/
+      - type: bind
+        source: ./php/apache2
+        target: /usr/local/apache2/conf
+    ports:
+      - 8080:8080
+
